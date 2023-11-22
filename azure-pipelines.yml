@@ -10,7 +10,7 @@ jobs:
 - job: SecretJob
   displayName: 'Fetch Secrets'
   pool:
-    vmImage: 'windows-latest'
+    vmImage: ''
 
   steps:
   - powershell: |
