@@ -1,0 +1,35 @@
+parameters:
+- name: Endpoint
+  type: string
+  default: 'default-endpoint'
+- name: Operation
+  type: string
+  default: 'POST'  # Set your default operation here
+
+jobs:
+- job: SecretJob
+  displayName: 'Fetch Secrets'
+  pool:
+    vmImage: 'windows-latest'
+
+  steps:
+  - powershell: |
+      .\set_env_vars.ps1
+    env:
+      API_URL: '$(API_URL)'
+      API_USERNAME: '$(API_USERNAME)'
+      API_PASSWORD: '$(API_PASSWORD)'
+      INSTANCE_NAME: '$(INSTANCE_NAME)'
+      ENDPOINT: '$(ENDPOINT)'
+      SELECTED_OPERATION: '$(Operation)'
+    displayName: 'Run PowerShell Script'
+
+  - script: python api_call.py
+    displayName: 'Run Python Script'
+
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: '$(System.DefaultWorkingDirectory)'
+      Contents: '*.json'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    displayName: 'Copy JSON files'
